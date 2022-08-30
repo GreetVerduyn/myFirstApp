@@ -42,3 +42,7 @@ Don't forget to create a vhost for this project!
 </VirtualHost>
 
 Nu eerst wat leren op de site van Symfony
+
+
+
+test test test 
