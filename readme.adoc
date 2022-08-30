@@ -42,7 +42,45 @@ Don't forget to create a vhost for this project!
 </VirtualHost>
 
 Nu eerst wat leren op de site van Symfony
+Bij het opstarten van een project dient eerst de server te worden opgezet. Voor onze oefening is dit niet nodig.
+
+
+== oefening:
+https://symfony.com/doc/current/page_creation.html
+
+=== Creating a page: Route and Controller
+- Create a "Controller" class and a "controller" method (a function where you build the page and
+ultimately return a Response object) inside of it.
+
+- associate this controller function with a public URL, so the method is called when a user browses to it.
+This association is defined by creating a route in the config/routes.yaml file.
+
+image::images/image-2022-08-30-16-24-14-009.png[]
+
+OR
+
+Use annotation Routes
+Instead of defining your route in YAML, Symfony also allows you to use annotation or attribute routes.
+Attributes are built-in in PHP starting from PHP 8.
+In earlier PHP versions you can use annotations. To do this, you need to install the annotations package:
+
+ composer require annotations
+
+image::images/image-2022-08-30-16-25-23-448.png[]
 
 
 
-test test test 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
