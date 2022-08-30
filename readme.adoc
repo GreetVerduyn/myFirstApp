@@ -1,0 +1,42 @@
+SYMFONY
+
+== Installatie: +
+https://symfony.com/download
+
+=== Stap 1:
+Kies op welke manier je wenst te installeren
+ Binaries: amd64 =&gt; zipfile
+
+(Een binair bestand is een computerbestand waarin elke positie alle denkbare bitcombinaties kan bevatten (256 verschillende bij gebruik van een 8-bitscodering).
+
+=== Stap 2:
+De zipfile dient uitgepakt te worden en deze uitgepakte bestanden dienen in een gewenste map** gestoken te worden.
+** C:\Program Files\Symfony
+
+De map Symfony maken we nieuw aan en de geopende bestanden kopiëren we naar hier
+
+=== Stap 3:
+Command doorgeven in terminal: $ symfony -v
+
+Start oefening: 
+
+ Command : `symfony new YOUR_PROJECT_NAME --web-app`
+
+ Project wordt aangemaakt op de plaats waar je je command hebt ingevoerd
+
+Don't forget to create a vhost for this project!
+
+ <VirtualHost *:80>
+ ServerName domain.tld
+ ServerAlias www.domain.tld
+
+----
+ DocumentRoot /var/www/project/public
+ <Directory /var/www/project/public>
+     AllowOverride All
+     Order Allow,Deny
+     Allow from All
+ </Directory>
+----
+
+</VirtualHost>
