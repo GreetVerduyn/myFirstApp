@@ -69,18 +69,40 @@ In earlier PHP versions you can use annotations. To do this, you need to install
 image::images/image-2022-08-30-16-25-23-448.png[]
 
 
+=== The bin/console Command
+This is a buil-in debugging tool.
 
+- If you run the command " php bin/console", You see a list of commands that can give you debugging information,
+help generate code, generate database migrations and a lot more...
 
+- To get a list of all of the routes in your system, use the debug:router command:
 
+ php bin/console debug:router
 
+=== Rendering a template
+If you're returning HTML from your controller, you'll probably want to render a template.
+Fortunately, Symfony comes with Twig: a templating language.
+https://twig.symfony.com/
 
+- Install the twig package with:
 
+ composer require twig
 
+- Make LuckyController extends Symfony's base AbstractController class:
 
+image::images/image-2022-08-30-16-42-31-853.png[]
 
+- Use the handy render() method to render a template. Pass it a number variable so you can use it in Twig:
 
+image::images/image-2022-08-30-16-45-08-238.png[]
 
+- Create a new templates/lucky directory with a new number.html.twig file inside:
+(Template files live in the templates/ directory, which was created for you automatically when you installed Twig.)
 
+image::images/image-2022-08-30-16-50-35-621.png[]
 
+image::images/image-2022-08-30-16-51-29-912.png[]
+
+The {{ number }} syntax is used to print variables in Twig
 
 
