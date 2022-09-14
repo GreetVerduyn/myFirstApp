@@ -5,7 +5,7 @@ https://symfony.com/download
 
 === Stap 1:
 Kies op welke manier je wenst te installeren
- Binaries: amd64 =&gt; zipfile
+ Binaries: amd64 (= zipfile)
 
 (Een binair bestand is een computerbestand waarin elke positie alle denkbare bitcombinaties kan bevatten (256 verschillende bij gebruik van een 8-bitscodering).
 
@@ -24,42 +24,49 @@ Start oefening:
 
  Project wordt aangemaakt op de plaats waar je je command hebt ingevoerd
 
-Don't forget to create a vhost for this project!
+//Don't forget to create a vhost for this project!
+//
+// <VirtualHost *:80>
+// ServerName domain.tld
+// ServerAlias www.domain.tld
+//
+//----
+// DocumentRoot /var/www/project/public
+// <Directory /var/www/project/public>
+//     AllowOverride All
+//     Order Allow,Deny
+//     Allow from All
+// </Directory>
+//----
+//
+//</VirtualHost>
 
- <VirtualHost *:80>
- ServerName domain.tld
- ServerAlias www.domain.tld
+Server wordt opgestart door Symfony door deze te openen via de terminal
 
-----
- DocumentRoot /var/www/project/public
- <Directory /var/www/project/public>
-     AllowOverride All
-     Order Allow,Deny
-     Allow from All
- </Directory>
-----
+ symfony server:start
 
-</VirtualHost>
 
 Nu eerst wat leren op de site van Symfony
-Bij het opstarten van een project dient eerst de server te worden opgezet. Voor onze oefening is dit niet nodig.
+Bij het opstarten van een project dient eerst de server te worden opgezet.
+Voor onze oefening is dit niet nodig.
 
 
 == oefening:
 https://symfony.com/doc/current/page_creation.html
 
 === Creating a page: Route and Controller
-- Create a "Controller" class and a "controller" method (a function where you build the page and
-ultimately return a Response object) inside of it.
+. Create a "Controller" class and a "controller" method
+(a function where you build the page and ultimately return a Response object) inside of it.
 
-- associate this controller function with a public URL, so the method is called when a user browses to it.
-This association is defined by creating a route in the config/routes.yaml file.
+. associate this controller function with a public URL,so the method is called when a user browses to it.
+
+.. This association is defined by creating a route in the config/routes.yaml file.
 
 image::images/image-2022-08-30-16-24-14-009.png[]
 
 OR
-
-Use annotation Routes
+[start=2]
+.. by using annotation Routes
 Instead of defining your route in YAML, Symfony also allows you to use annotation or attribute routes.
 Attributes are built-in in PHP starting from PHP 8.
 In earlier PHP versions you can use annotations. To do this, you need to install the annotations package:
@@ -70,12 +77,12 @@ image::images/image-2022-08-30-16-25-23-448.png[]
 
 
 === The bin/console Command
-This is a buil-in debugging tool.
+This is a build-in debugging tool.
 
-- If you run the command " php bin/console", You see a list of commands that can give you debugging information,
+. If you run the command " php bin/console", You see a list of commands that can give you debugging information,
 help generate code, generate database migrations and a lot more...
 
-- To get a list of all of the routes in your system, use the debug:router command:
+. To get a list of all of the routes in your system, use the debug:router command:
 
  php bin/console debug:router
 
@@ -84,19 +91,19 @@ If you're returning HTML from your controller, you'll probably want to render a 
 Fortunately, Symfony comes with Twig: a templating language.
 https://twig.symfony.com/
 
-- Install the twig package with:
+. Install the twig package with:
 
  composer require twig
 
-- Make LuckyController extends Symfony's base AbstractController class:
+. Make LuckyController extends Symfony's base AbstractController class:
 
 image::images/image-2022-08-30-16-42-31-853.png[]
 
-- Use the handy render() method to render a template. Pass it a number variable so you can use it in Twig:
+. Use the handy render() method to render a template. Pass it a number variable so you can use it in Twig:
 
 image::images/image-2022-08-30-16-45-08-238.png[]
 
-- Create a new templates/lucky directory with a new number.html.twig file inside:
+. Create a new templates/lucky directory with a new number.html.twig file inside:
 (Template files live in the templates/ directory, which was created for you automatically when you installed Twig.)
 
 image::images/image-2022-08-30-16-50-35-621.png[]
@@ -106,3 +113,382 @@ image::images/image-2022-08-30-16-51-29-912.png[]
 The {{ number }} syntax is used to print variables in Twig
 
 
+=== Checking out the Project Structure
+
+image::images/image-2022-08-30-16-53-29-365.png[]
+image::images/image-2022-08-30-16-54-14-608.png[]
+
+
+=== Fundamentals
+
+==== Routing
+https://symfony.com/doc/current/routing.html
+
+===== Creating Routes
+Routes can be configured in YAML, XML, PHP or using attributes.
+
+. creating Routes as Attributes
+PHP attributes allow to define routes next to the code of the controllers associated to those routes.
+Attributes are native in PHP 8 and higher versions, so you can use them right away.
+This configuration tells Symfony to look for routes defined as attributes in any PHP class
+stored in the src/Controller/ directory.
+
+NOTE: If you define multiple PHP classes in the same file,
+Symfony only loads the routes of the first class, ignoring all the other routes.
+
+. creating Routes in YAML, XML or PHP files
+Instead of defining routes in the controller classes, you can define them in a separate YAML, XML or PHP file.
+The main advantage is that they don't require any extra dependency.
+The main drawback is that you have to work with multiple files when checking the routing of some controller action.
+
+. Matching HTTP Methods
+By default, routes match any HTTP verb (GET, POST, PUT, etc.)
+Use the methods option to restrict the verbs each route should respond to:
+
+examples:
+
+`#[Route('/api/posts/{id}', methods: ['GET', 'HEAD'])]`
+
+`#[Route('/api/posts/{id}', methods: ['PUT'])]`
+
+NOTE: HTML forms only support GET and POST methods.
+If you're calling a route with a different method from an HTML form, add a hidden field called _method
+with the method to use (e.g. <input type="hidden" name="_method" value="PUT"/>).
+If you create your forms with Symfony Forms this is done automatically for you.
+
+. Matching Expressions
+Use the condition option if you need some route to match based on some arbitrary matching logic:
+
+ // src/Controller/DefaultController.php
+ namespace App\Controller;
+
+ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+ use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\Routing\Annotation\Route;
+
+ class DefaultController extends AbstractController
+ {
+ #[Route(
+ '/contact',
+ name: 'contact',
+ condition: "context.getMethod() in ['GET', 'HEAD'] and request.headers.get('User-Agent') matches '/firefox/i'",
+ // expressions can also include config parameters:
+ // condition: "request.headers.get('User-Agent') matches '%app.allowed_browsers%'"
+ )]
+ public function contact(): Response
+ {
+ // ...
+ }
+
+     #[Route(
+         '/posts/{id}',
+         name: 'post_show',
+         // expressions can retrieve route parameter values using the "params" variable
+         condition: "params['id'] < 1000"
+     )]
+     public function showPost(int $id): Response
+     {
+         // ... return a JSON response with the post
+     }
+ }
+
+The value of the condition option is any valid ExpressionLanguage expression and can use
+any of these variables created by Symfony:
+
+*context*: An instance of RequestContext, which holds the most fundamental information about the route being matched.
+
+*request*: The Symfony Request object that represents the current request.
+
+*params*: An array of matched route parameters for the current route.
+
+You can also use these functions:
+
+ env(string $name)
+   Returns the value of a variable using Environment Variable Processors
+
+ service(string $alias)
+   Returns a routing condition service. You'll have to add the #[AsRoutingConditionService] attribute or
+   routing.condition_service tag to your service if you want to use it in the condition.
+
+
+===== Debugging Routes
+
+As your application grows, you'll eventually have a lot of routes.
+Symfony includes some commands to help you debug routing issues.
+
+. The `debug:router` command
+lists all your application routes in the same order in which Symfony evaluates them:
+
+. Pass the name (or part of the name) of some route to this argument to print the route details:
+example: `php bin/console debug:router app_lucky_number`
+
+. `router:match`  shows which route will match the given URL.
+It's useful to find out why some URL is not executing the controller action that you expect:
+
+===== Route Parameters
+It's common to define routes where some parts are variable.
+For example, the URL to display some blog post will probably include the title or slug (e.g. `/blog/my-first-post` or
+`/blog/all-about-symfony`).
+
+In Symfony routes, **variable parts are wrapped in `{ ... }` and they must have a unique name**.
+For example, the route to display the blog post contents is defined as `/blog/{slug}`:
+
+ #[Route('/blog/{slug}', name: 'blog_show')]
+ public function show(string $slug): Response
+ {
+       // $slug will equal the dynamic part of the URL
+       // e.g. at /blog/yay-routing, then $slug='yay-routing'
+       // ...
+ }
+
+The name of the variable part ({slug} in this example) is used to create a PHP variable
+where that route content is stored and passed to the controller. If a user visits the `/blog/my-first-post` URL,
+Symfony executes the show() method in the BlogController class and passes a `$slug = 'my-first-post'` argument
+to the show() method.
+
+Routes can define any number of parameters, but each of them can only be used once on each route
+(e.g. /blog/posts-about-{category}/page/{pageNumber}).
+
+====== Parameter Validation
+
+Imagine that your application has a blog_show route (URL: /blog/{slug}) and a blog_list route (URL: /blog/{page}).
+Given that route parameters accept any value, there's no way to differentiate both routes.
+
+. If the user requests /blog/my-first-post, both routes will match and Symfony will use the route which was defined first.
+To fix this, add some validation to the {page} parameter using the requirements option:
+
+ class BlogController extends AbstractController
+ {
+      #[Route('/blog/{page}', name: 'blog_list', requirements: ['page' => '\d+'])]
+      public function list(int $page): Response
+      {
+      // ...
+      }
+       #[Route('/blog/{slug}', name: 'blog_show')]
+       public function show($slug): Response
+       {
+           // ...
+       }
+ }
+
+The requirements option defines the PHP regular expressions that route parameters must match for the entire route to match.
+In this example, \d+ is a regular expression that matches a digit of any length
+
+. If you prefer, requirements can be inlined in each parameter using the syntax {parameter_name<requirements>}.
+This feature makes configuration more concise, but it can decrease route readability when requirements are complex:
+
+ class BlogController extends AbstractController
+ {
+     #[Route('/blog/{page<\d+>}', name: 'blog_list')]
+     public function list(int $page): Response
+     {
+     // ...
+     }
+ }
+
+====== Getting the Route Name and Parameters
+
+The Request object created by Symfony stores all the route configuration (such as the name and parameters) in the "request attributes". You can get this information in a controller via the Request object:
+
+ // src/Controller/BlogController.php
+ namespace App\Controller;
+
+ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+ use Symfony\Component\HttpFoundation\Request;
+ use Symfony\Component\HttpFoundation\Response;
+ use Symfony\Component\Routing\Annotation\Route;
+
+ class BlogController extends AbstractController
+ {
+     #[Route('/blog', name: 'blog_list')]
+     public function list(Request $request): Response
+    {
+       $routeName = $request->attributes->get('_route');
+       $routeParameters = $request->attributes->get('_route_params');
+
+        // use this to get all the available attributes (not only routing ones):
+        $allAttributes = $request->attributes->all();
+
+        // ...
+    }
+ }
+
+
+
+==== Controller
+
+https://symfony.com/doc/current/controller.html
+
+==== Creating and Using Templates
+
+https://symfony.com/doc/current/templates.html
+
+==== Configure Symfony
+
+https://symfony.com/doc/current/configuration.html
+
+==== Service container
+
+https://symfony.com/doc/current/service_container.html
+
+==== form system
+
+https://symfony.com/doc/current/forms.html
+
+==== Doctrines
+
+https://symfony.com/doc/current/doctrine.html
+
+
+=== Symfony versus Flat PHP
+
+https://symfony.com/doc/current/introduction/from_flat_php_to_symfony.html
+
+=== Symfony and HTTP Fundamentals
+
+https://symfony.com/doc/current/introduction/http_fundamentals.html
+
+
+== SECURITY
+
+To get started, install the SecurityBundle:
+
+`composer require symfony/security-bundle`
+
+The three main elements are discussed:
+
+. The User (providers)
+
+Any secured section of your application needs some concept of a user.
+The user provider loads users from any storage (e.g. the database) based on a "user identifier"
+(e.g. the user's email address);
+
+Permissions in Symfony are always linked to a user object.
+If you need to secure (parts of) your application, you need to create a user class.
+This is a class that implements UserInterface. This is often a Doctrine entity,
+but you can also use a dedicated Security user class.
+
+The easiest way to generate a user class is using the `make:user` command from the MakerBundle:
+
+ $ php bin/console make:user
+ The name of the security user class (e.g. User) [User]:
+ > User
+
+   Do you want to store user data in the database (via Doctrine)? (yes/no)[yes]:
+   > yes
+
+   Enter a property name that will be the unique "display" name for the user (e.g. email, username, uuid) [email]:
+   > email
+
+ Will this app need to hash/check user passwords?
+ Choose No if passwords are not needed or will be checked/hashed by some other system (e.g. a single sign-on server).
+
+ Does this app need to hash/check user passwords? (yes/no) [yes]:
+ > yes
+
+ created: src/Entity/User.php
+ created: src/Repository/UserRepository.php
+ updated: src/Entity/User.php
+ updated: config/packages/security.yaml
+
+If your user is a Doctrine entity, like in the example above,
+don't forget to create the tables by creating and running a migration:
+
+BEFORE WE START, you have to give acces to the database.
+in the .env, you have to comment the connections you don't use and adapt the one u use...
+
+  DATABASE_URL="mysql://'username':'password'@127.0.0.1:3306/'schemaname'?serverVersion=mariadb-10.4.24"
+
+example:
+
+DATABASE_URL="mysql://admin:paswoord12@127.0.0.1:4306/security?serverVersion=mariadb-10.4.24"
+
+
+ $ php bin/console make:migration
+
+ $ php bin/console doctrine:migrations:migrate
+
+https://www.doctrine-project.org/projects/doctrine-orm/en/2.12/tutorials/getting-started.html
+
+
+
+.. Loading the User: The User Provider
+
+Besides creating the entity, the make:user command also adds config for a user provider in your security configuration:
+
+ # config/packages/security.yaml
+ security:
+     # ...
+     providers:
+         app_user_provider:
+             entity:
+                 class: App\Entity\User
+                 property: email
+
+This user provider knows how to (re)load users from a storage (e.g. a database) based on a "user identifier"
+(e.g. the user's email address or username).
+The configuration above uses Doctrine to load the User entity using the email property as "user identifier".
+
+User providers are used in a couple places during the security lifecycle:
+
+*Load the User based on an identifier*
+
+During login (or any other authenticator), the provider loads the user based on the user identifier.
+Some other features, like user impersonation and Remember Me also use this.
+
+*Reload the User from the session*
+At the beginning of each request, the user is loaded from the session (unless your firewall is stateless).
+The provider "refreshes" the user (e.g. the database is queried again for fresh data) to make sure all user information is up to date (and if necessary, the user is de-authenticated/logged out if something changed). See Security for more information about this process.
+
+.. Registering the User: Hashing Passwords
+
+Many applications require a user to log in with a password. For these applications,
+the SecurityBundle provides password hashing and verification functionality.
+
+First, make sure your User class implements the PasswordAuthenticatedUserInterface:
+
+image::image-2022-08-31-14-33-22-108.png[]
+
+Then, configure which password hasher should be used for this class.
+If your security.yaml file wasn't already pre-configured, then make:user should have done this for you:
+
+image::image-2022-08-31-14-34-20-020.png[]
+
+Now that Symfony knows how you want to hash the passwords,
+you can use the UserPasswordHasherInterface service to do this before saving your users to the database:
+
+image::image-2022-08-31-14-35-09-179.png[]
+
+image::image-2022-08-31-14-36-26-946.png[]
+
+
+
+
+. The Firewall & Authenticating Users (firewalls)
+
+The firewall is the core of securing your application.
+Every request within the firewall is checked if it needs an authenticated user.
+The firewall also takes care of authenticating this user (e.g. using a login form);
+
+image::images/image-2022-09-01-14-35-47-599.png[]
+
+* Only one firewall is active on each request: Symfony uses the pattern key to find the first match
+(you can also match by host or other things).
+
+* The dev firewall is really a fake firewall: it makes sure that you don't accidentally
+block Symfony's dev tools-which live under URLs like /_profiler and /_wdt.
+
+* All real URLs are handled by the main firewall (no pattern key means it matches all URLs).
+A firewall can have many modes of authentication, in other words, it enables many ways to ask the question "Who are you?".
+
+* The lazy anonymous mode prevents the session from being started if there is no need for authorization
+(i.e. explicit check for a user privilege). This is important to keep requests cacheable (see HTTP Cache).
+
+
+
+
+
+. Access Control (Authorization) (access_control)
+
+Using access control and the authorization checker, you control the required permissions
+to perform a specific action or visit a specific URL.
